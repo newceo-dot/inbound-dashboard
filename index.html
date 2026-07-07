@@ -96,6 +96,13 @@ td.dt{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:700}
 td .code{color:var(--sub);font-size:11px}
 .empty{padding:46px 0;text-align:center;color:var(--sub)}
 .err{color:#B4232C}
+
+/* 입고 스케줄 표 */
+.sched-wrap{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px}
+.sched-wrap .tbl-scroll{max-height:520px}
+tr.sdate td{background:#F7F9FB;font-weight:800;border-bottom:1px solid var(--line)}
+tr.sdate .dow{font-weight:600;color:var(--sub);font-size:11px;margin-left:5px}
+td.bl{font-variant-numeric:tabular-nums;white-space:nowrap}
 footer{padding:14px;font-size:11px;color:#98A1AC;text-align:center}
 
 @media(max-width:900px){
@@ -178,7 +185,31 @@ footer{padding:14px;font-size:11px;color:#98A1AC;text-align:center}
         <div class="empty" id="empty" style="display:none"></div>
       </div>
     </div>
-    <footer>오더진행현황_RAW 자동 연동 · 입고일=확정 / ETA=예정 · SC/PI# 단위 그룹 · 새로고침 시 최신 데이터</footer>
+
+    <div class="sched-wrap">
+      <div class="grid-title">
+        <b id="sTitle">입고 스케줄 (창고)</b><span id="sSub"></span>
+      </div>
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:120px;cursor:default">입고일</th>
+              <th style="width:60px;cursor:default">시간</th>
+              <th class="hide-m" style="width:180px;cursor:default">더존코드</th>
+              <th style="cursor:default">품목명</th>
+              <th style="width:76px;text-align:right;cursor:default">수량</th>
+              <th style="width:56px;cursor:default">VOL</th>
+              <th style="width:150px;cursor:default">B/L·컨테이너</th>
+              <th class="hide-m" style="width:110px;cursor:default">비고</th>
+            </tr>
+          </thead>
+          <tbody id="sbody"></tbody>
+        </table>
+        <div class="empty" id="sempty" style="display:none"></div>
+      </div>
+    </div>
+    <footer>오더진행현황_RAW + 입고 스케줄 시트 자동 연동 · 입고일=확정 / ETA=예정 · 새로고침 시 최신 데이터</footer>
   </div>
 </div>
 
@@ -187,6 +218,7 @@ footer{padding:14px;font-size:11px;color:#98A1AC;text-align:center}
 const API_URL = 'https://script.google.com/macros/s/AKfycbwUsThyL5-TERebYgke0jQO50YkGr6gtBHG1DT2qI_GggbIP1Nq-z4Gtgrhp9M_VH01/exec';
 
 let ALL = [];
+let SCHED = [];
 let ym = (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })();
 let brandSel = '전체', kindSel = '전체', query = '', daySel = null;
 let sortK = 'date', sortAsc = true;
@@ -306,6 +338,58 @@ function render(){
   const x = document.getElementById('xDay');
   x.className = 'x' + (daySel ? ' on' : '');
   document.getElementById('btnClr').style.display = daySel ? 'block' : 'none';
+  renderSched();
+}
+
+
+function renderSched(){
+  const sbody = document.getElementById('sbody');
+  const sempty = document.getElementById('sempty');
+  sbody.innerHTML = '';
+  const DOWS = ['일','월','화','수','목','금','토'];
+
+  let list = SCHED.filter(s => s._d
+    && s._d.getFullYear() === ym.y && s._d.getMonth() === ym.m);
+  if (daySel) list = list.filter(s => sameDay(s._d, daySel));
+  if (query){
+    const q = query.toLowerCase();
+    list = list.filter(s =>
+      String(s.name).toLowerCase().includes(q)
+      || String(s.code).toLowerCase().includes(q)
+      || String(s.bl).toLowerCase().includes(q));
+  }
+  list.sort((a,b) => a._d - b._d || String(a.time).localeCompare(String(b.time)));
+
+  document.getElementById('sTitle').textContent =
+    (ym.m+1) + '월 입고 스케줄 (창고)' + (daySel ? ' · ' + fmtD(daySel) : '');
+  document.getElementById('sSub').textContent = list.length + '건';
+
+  if (!list.length){
+    sempty.style.display = 'block';
+    sempty.className = 'empty';
+    sempty.textContent = '해당 월 입고 스케줄이 없습니다.';
+    return;
+  }
+  sempty.style.display = 'none';
+
+  let prevKey = '';
+  for (const s of list){
+    const key = s._d.toDateString();
+    const isNew = key !== prevKey;
+    prevKey = key;
+    const tr = document.createElement('tr');
+    if (isNew) tr.className = 'sdate';
+    tr.innerHTML =
+      '<td class="dt">' + (isNew ? fmtFull(s._d) + '<span class="dow">(' + DOWS[s._d.getDay()] + ')</span>' : '') + '</td>'
+      + '<td>' + esc(s.time) + '</td>'
+      + '<td class="hide-m code">' + esc(s.code) + '</td>'
+      + '<td>' + esc(s.name) + '</td>'
+      + '<td class="num">' + (qtyNum(s.qty) ? qtyNum(s.qty).toLocaleString() : esc(s.qty)) + '</td>'
+      + '<td>' + esc(s.vol) + '</td>'
+      + '<td class="bl">' + esc(s.bl) + '</td>'
+      + '<td class="hide-m code">' + esc(s.note) + '</td>';
+    sbody.appendChild(tr);
+  }
 }
 
 function renderMini(){
@@ -417,6 +501,7 @@ async function load(){
   try{
     const data = await jsonp(API_URL);
     ALL = (data.items || []).map(it => ({ ...it, _r: resolve(it) }));
+    SCHED = (data.schedule || []).map(s => ({ ...s, _d: parseDate(s.date) }));
     const t = new Date(data.updated || Date.now());
     document.getElementById('upd').innerHTML = '<b>●</b> 갱신 '
       + t.getFullYear() + '.' + String(t.getMonth()+1).padStart(2,'0') + '.' + String(t.getDate()).padStart(2,'0')
