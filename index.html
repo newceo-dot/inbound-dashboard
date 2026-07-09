@@ -375,7 +375,7 @@ function jsonp(url){
     s.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
     s.onerror = () => { rej(new Error('fail')); delete window[cb]; s.remove(); };
     document.body.appendChild(s);
-    setTimeout(() => { if (window[cb]) { rej(new Error('timeout')); delete window[cb]; s.remove(); } }, 20000);
+    setTimeout(() => { if (window[cb]) { rej(new Error('timeout')); delete window[cb]; s.remove(); } }, 45000);
   });
 }
 function parseDate(s, inMonth){
