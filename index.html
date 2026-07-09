@@ -33,14 +33,20 @@ button,input,select{font:inherit}
 .nav .foot{margin-top:auto;padding:12px}
 
 /* 환율 위젯 */
-.fx{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:10px}
-.fx .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.fx{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:10px}
+.fx .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .fx .fh b{font-size:11.5px;font-weight:800}
 .fx .fh span{font-size:9.5px;color:var(--sub)}
-.fx .r{display:flex;justify-content:space-between;align-items:baseline;padding:3.5px 0;border-bottom:1px dashed var(--line)}
-.fx .r:last-child{border-bottom:0}
-.fx .r .c{font-size:11.5px;font-weight:700;color:var(--sub)}
-.fx .r .v{font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.fx .r{padding:7px 0;border-bottom:1px solid var(--line)}
+.fx .r:last-child{border-bottom:0;padding-bottom:0}
+.fx .r .top{display:flex;justify-content:space-between;align-items:baseline}
+.fx .r .c{font-size:11.5px;font-weight:800;color:var(--ink)}
+.fx .r .v{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
+.fx .r .bot{display:flex;justify-content:flex-end;align-items:center;gap:5px;margin-top:3px}
+.fx .r .chg{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.fx .r .chg.up{color:#C0392B} .fx .r .chg.down{color:#2456C4} .fx .r .chg.flat{color:var(--sub)}
+.fx .r .pct{font-size:10px;font-weight:800;border-radius:5px;padding:1.5px 6px;font-variant-numeric:tabular-nums}
+.fx .r .pct.up{background:#FBEAEA;color:#C0392B} .fx .r .pct.down{background:#EAF0FB;color:#2456C4} .fx .r .pct.flat{background:var(--line);color:var(--sub)}
 .fx .err{font-size:11px;color:var(--sub);text-align:center;padding:4px 0}
 .nav .lg{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--sub);padding:0 4px 8px}
 .nav .lg i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:6px}
@@ -767,25 +773,58 @@ function fillBrands(){
   }
 }
 
-// ===== 환율 =====
+// ===== 환율 (프랑크푸르터/ECB 기준 · 전일대비 포함) =====
+function crossRates(base, r){
+  return {
+    usd: r.KRW,
+    jpy100: r.KRW / r.JPY * 100,
+    cny: r.KRW / r.CNY,
+  };
+}
 async function loadFx(){
   const body = document.getElementById('fxBody');
   try{
-    const r = await fetch(FX_URL);
-    const d = await r.json();
-    if (!d || !d.rates || !d.rates.KRW) throw new Error('no data');
-    const krw = d.rates.KRW;
-    const usd = krw;
-    const jpy100 = krw / d.rates.JPY * 100;
-    const cny = krw / d.rates.CNY;
-    const f = n => n.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    body.innerHTML =
-      '<div class="r"><span class="c">USD</span><span class="v">₩' + f(usd) + '</span></div>'
-      + '<div class="r"><span class="c">JPY 100</span><span class="v">₩' + f(jpy100) + '</span></div>'
-      + '<div class="r"><span class="c">CNY</span><span class="v">₩' + f(cny) + '</span></div>';
-    const t = new Date(d.time_last_update_utc || Date.now());
-    document.getElementById('fxUpd').textContent =
-      (t.getMonth()+1) + '/' + t.getDate() + ' 기준';
+    const todayRes = await fetch('https://api.frankfurter.app/latest?from=USD&to=KRW,JPY,CNY');
+    const today = await todayRes.json();
+    if (!today || !today.rates || !today.rates.KRW) throw new Error('no data');
+
+    const d = new Date(today.date);
+    const y = new Date(d); y.setDate(y.getDate() - 1);
+    const yStr = y.getFullYear() + '-' + String(y.getMonth()+1).padStart(2,'0') + '-' + String(y.getDate()).padStart(2,'0');
+    let yester = null;
+    try{
+      const yRes = await fetch('https://api.frankfurter.app/' + yStr + '?from=USD&to=KRW,JPY,CNY');
+      const yData = await yRes.json();
+      if (yData && yData.rates && yData.rates.KRW) yester = yData;
+    }catch(e){ /* 전일 데이터 없으면 변동 표시 생략 */ }
+
+    const cur = crossRates('USD', today.rates);
+    const prev = yester ? crossRates('USD', yester.rates) : null;
+
+    const f1 = n => n.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const rows = [
+      { c: '미국 USD', v: cur.usd, p: prev ? prev.usd : null },
+      { c: '일본 JPY 100', v: cur.jpy100, p: prev ? prev.jpy100 : null },
+      { c: '중국 CNY', v: cur.cny, p: prev ? prev.cny : null },
+    ];
+
+    body.innerHTML = rows.map(x => {
+      let chgHtml = '';
+      if (x.p != null){
+        const diff = x.v - x.p;
+        const pct = diff / x.p * 100;
+        const dir = Math.abs(diff) < 0.05 ? 'flat' : (diff > 0 ? 'up' : 'down');
+        const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '-';
+        chgHtml = '<div class="bot">'
+          + '<span class="chg ' + dir + '">' + arrow + ' ' + f1(Math.abs(diff)) + '</span>'
+          + '<span class="pct ' + dir + '">' + (diff>0?'+':diff<0?'-':'') + Math.abs(pct).toFixed(2) + '%</span>'
+          + '</div>';
+      }
+      return '<div class="r"><div class="top"><span class="c">' + x.c + '</span>'
+        + '<span class="v">₩' + f1(x.v) + '</span></div>' + chgHtml + '</div>';
+    }).join('');
+
+    document.getElementById('fxUpd').textContent = (d.getMonth()+1) + '/' + d.getDate() + ' 기준';
   }catch(e){
     body.innerHTML = '<div class="err">환율 조회 실패</div>';
   }
