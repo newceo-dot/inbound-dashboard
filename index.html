@@ -207,17 +207,18 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .cprod.multi .phd .caret{visibility:visible}
 .cprod .phd .pmain{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .cprod .phd .pnm{font-weight:800;font-size:13px;word-break:keep-all;line-height:1.25}
-.cprod .phd .pids{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:10.5px;color:var(--sub);font-family:'SF Mono',Consolas,monospace}
-.cprod .phd .pids .k{color:#2456C4;font-weight:600}
-.cprod .phd .pids .k .lb{color:var(--sub);font-weight:600;margin-right:2px;font-family:inherit}
-.cprod .phd .pusd{font-size:10.5px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:99px;padding:1px 8px;flex:none}
+.cprod .phd .pids{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:11px;margin-top:3px}
+.cprod .phd .pids .k{display:inline-flex;align-items:center;gap:4px;background:#F1F5F9;border-radius:6px;padding:2px 7px;font-family:'SF Mono',Consolas,monospace;color:#334155;font-weight:600}
+.cprod .phd .pids .k .lb{color:#94A3B8;font-weight:700;font-family:'Pretendard',sans-serif;font-size:9.5px;letter-spacing:.02em}
+.cprod .phd .pusd{font-size:12px;font-weight:800;color:var(--ink);background:#FFF7E6;border:1px solid #FfE0A3;border-radius:8px;padding:3px 10px;flex:none}
+.cprod .phd .pusd .lb{font-size:9.5px;color:#B78A2E;font-weight:700;margin-right:3px}
 /* 단일 로트 제품: 헤더 오른쪽에 값 인라인 */
-.cprod .phd .single{display:flex;align-items:baseline;gap:9px;flex:none;font-variant-numeric:tabular-nums}
+.cprod .phd .single{display:flex;align-items:baseline;gap:11px;flex:none;font-variant-numeric:tabular-nums}
 .cprod .phd .single .sk{font-size:16px;font-weight:800}
 .cprod .phd .single .sk small{font-size:10px;font-weight:700;color:var(--sub);margin-left:1px}
-.cprod .phd .single .sf{font-size:11px;color:var(--sub)}
+.cprod .phd .single .sf{font-size:11.5px;color:var(--sub)}
 .cprod .phd .single .sf b{color:#2456C4;font-weight:700}
-.cprod .phd .single .sd{font-size:10.5px;color:var(--sub)}
+.cprod .phd .single .sd{font-size:11px;color:var(--sub)}
 /* 다중 로트 제품: 헤더에 범위+평균 */
 .cprod .phd .prange{font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;flex:none}
 .cprod .phd .prange .lbl{color:var(--sub);font-weight:600;margin-right:3px}
@@ -912,6 +913,8 @@ function fillBrands(){
 function costNum(s){ const n = parseFloat(String(s||'').replace(/[^\d.]/g,'')); return isNaN(n)?0:n; }
 function fmtWon(n){ return Math.round(n).toLocaleString('ko-KR'); }
 function fmtFx(n){ return n.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+// 시트값에 이미 '$'가 있으면 그대로, 없으면 붙임 (중복 방지)
+function usd(s){ s = String(s||'').trim(); if(!s) return ''; return s[0]==='$' ? s : '$'+s; }
 
 function renderCost(){
   const wrap = document.getElementById('costWrap');
@@ -1009,7 +1012,7 @@ function renderCost(){
           + '<div class="phd">'
           +   '<span class="caret"></span>'
           +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
-          +   (p.usd ? '<span class="pusd">$' + esc(p.usd) + '</span>' : '')
+          +   (p.usd ? '<span class="pusd"><span class="lb">FOB</span>' + esc(usd(p.usd)) + '</span>' : '')
           +   '<div class="single">'
           +     '<span class="sk">₩' + fmtWon(costNum(l.krw)) + '<small>원</small></span>'
           +     (l.fx ? '<span class="sf">환율 <b>' + esc(l.fx) + '</b></span>' : '')
@@ -1028,7 +1031,7 @@ function renderCost(){
         return '<div class="lot'+cls+'">'
           + '<div class="ld"><span class="dot"></span>' + esc(l.inDate||'-') + '</div>'
           + '<div class="lkrw">₩' + fmtWon(k) + '<small>원</small></div>'
-          + (l.fx ? '<div class="lfx">환율 <b>' + esc(l.fx) + '</b>' + (l.usd?' · $'+esc(l.usd):'') + '</div>' : (l.usd?'<div class="lfx">$'+esc(l.usd)+'</div>':''))
+          + (l.fx ? '<div class="lfx">환율 <b>' + esc(l.fx) + '</b>' + (l.usd?' · '+esc(usd(l.usd)):'') + '</div>' : (l.usd?'<div class="lfx">'+esc(usd(l.usd))+'</div>':''))
           + '</div>';
       }).join('');
 
@@ -1036,7 +1039,7 @@ function renderCost(){
         + '<div class="phd" data-pt="'+esc(p.code)+'">'
         +   '<span class="caret">'+pcaret+'</span>'
         +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
-        +   (p.usd ? '<span class="pusd">$' + esc(p.usd) + '</span>' : '')
+        +   (p.usd ? '<span class="pusd"><span class="lb">FOB</span>' + esc(usd(p.usd)) + '</span>' : '')
         +   '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + ' ~ ₩' + fmtWon(mx) + '</span>'
         +   '<span class="pavg"><span class="lbl">가중평균</span>₩' + fmtWon(avg) + '</span>'
         + '</div>'
