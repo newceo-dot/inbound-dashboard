@@ -189,7 +189,7 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .bl-group .it .note{font-size:11px;color:var(--eta)}
 
 /* 실시간 재고원가 */
-.cost-wrap{display:flex;flex-direction:column;gap:14px}
+.cost-wrap{display:flex;flex-direction:column;gap:12px;max-width:1080px}
 .cbrand{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
 .cbrand > .bhd{display:flex;align-items:center;gap:10px;padding:11px 15px;background:#F6FAF7;border-bottom:1px solid var(--line);cursor:pointer}
 .cbrand > .bhd:hover{background:var(--green-bg)}
@@ -197,27 +197,44 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .cbrand .bhd .bnm{font-size:14px;font-weight:800}
 .cbrand .bhd .bcnt{font-size:10.5px;font-weight:800;background:var(--green);color:#fff;border-radius:99px;padding:1.5px 9px}
 .cbrand .bhd .bmeta{margin-left:auto;font-size:11.5px;color:var(--sub);font-variant-numeric:tabular-nums}
-.cbrand .bbody{padding:6px 10px 12px}
-.cprod{border:1px solid var(--line2);border-radius:12px;margin-top:8px;overflow:hidden}
-.cprod .phd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:9px 13px;background:#FBFCFB;border-bottom:1px solid var(--line2)}
-.cprod .phd .pnm{font-weight:800;font-size:13px;flex:1;min-width:180px;word-break:keep-all}
-.cprod .phd .pcode{font-family:'SF Mono',Consolas,monospace;font-size:11px;color:#2456C4;font-weight:600}
-.cprod .phd .pusd{font-size:11px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:99px;padding:1.5px 9px}
-.cprod .phd .prange{font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.cbrand .bbody{padding:8px 10px 10px;display:flex;flex-direction:column;gap:6px}
+
+/* 제품 행 */
+.cprod{border:1px solid var(--line2);border-radius:11px;overflow:hidden;background:#fff}
+.cprod .phd{display:flex;flex-wrap:nowrap;align-items:center;gap:4px 10px;padding:8px 12px;background:#FBFCFB}
+.cprod.multi .phd{border-bottom:1px solid var(--line2);cursor:pointer}
+.cprod .phd .caret{font-size:10px;color:var(--sub);width:9px;flex:none;visibility:hidden}
+.cprod.multi .phd .caret{visibility:visible}
+.cprod .phd .pmain{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.cprod .phd .pnm{font-weight:800;font-size:13px;word-break:keep-all;line-height:1.25}
+.cprod .phd .pids{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:10.5px;color:var(--sub);font-family:'SF Mono',Consolas,monospace}
+.cprod .phd .pids .k{color:#2456C4;font-weight:600}
+.cprod .phd .pids .k .lb{color:var(--sub);font-weight:600;margin-right:2px;font-family:inherit}
+.cprod .phd .pusd{font-size:10.5px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:99px;padding:1px 8px;flex:none}
+/* 단일 로트 제품: 헤더 오른쪽에 값 인라인 */
+.cprod .phd .single{display:flex;align-items:baseline;gap:9px;flex:none;font-variant-numeric:tabular-nums}
+.cprod .phd .single .sk{font-size:16px;font-weight:800}
+.cprod .phd .single .sk small{font-size:10px;font-weight:700;color:var(--sub);margin-left:1px}
+.cprod .phd .single .sf{font-size:11px;color:var(--sub)}
+.cprod .phd .single .sf b{color:#2456C4;font-weight:700}
+.cprod .phd .single .sd{font-size:10.5px;color:var(--sub)}
+/* 다중 로트 제품: 헤더에 범위+평균 */
+.cprod .phd .prange{font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;flex:none}
 .cprod .phd .prange .lbl{color:var(--sub);font-weight:600;margin-right:3px}
-.cprod .phd .pavg{font-size:11.5px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;margin-left:auto}
+.cprod .phd .pavg{font-size:11.5px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;flex:none}
 .cprod .phd .pavg .lbl{color:var(--sub);font-weight:600;margin-right:3px}
-/* 로트 행: 입고일별 재고단가 나란히 */
-.lots{display:flex;flex-wrap:wrap;gap:8px;padding:10px 13px}
-.lot{border:1px solid var(--line);border-radius:10px;padding:7px 11px;min-width:132px;background:#fff}
+/* 로트 카드 (다중일 때만) */
+.lots{display:flex;flex-wrap:wrap;gap:7px;padding:9px 12px}
+.lot{border:1px solid var(--line);border-radius:9px;padding:6px 10px;min-width:120px;background:#fff}
 .lot.hi{border-color:var(--green);background:var(--green-bg)}
-.lot .ld{font-size:10.5px;font-weight:800;color:var(--sub);display:flex;align-items:center;gap:5px}
+.lot.lo{border-color:#E4B7BB}
+.lot .ld{font-size:10px;font-weight:800;color:var(--sub);display:flex;align-items:center;gap:5px}
 .lot .ld .dot{width:6px;height:6px;border-radius:99px;background:var(--ok)}
-.lot .lkrw{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
-.lot .lkrw small{font-size:10px;font-weight:700;color:var(--sub);margin-left:1px}
-.lot .lfx{font-size:10.5px;color:var(--sub);font-variant-numeric:tabular-nums;margin-top:1px}
+.lot.hi .ld .dot{background:var(--green)} .lot.lo .ld .dot{background:#C0392B}
+.lot .lkrw{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+.lot .lkrw small{font-size:9.5px;font-weight:700;color:var(--sub);margin-left:1px}
+.lot .lfx{font-size:10px;color:var(--sub);font-variant-numeric:tabular-nums;margin-top:1px}
 .lot .lfx b{color:#2456C4;font-weight:700}
-.lot .lbl-bl{font-size:9.5px;color:var(--sub);font-family:'SF Mono',Consolas,monospace;margin-top:2px;word-break:break-all}
 .cbrand.collapsed .bbody{display:none}
 .cprod.collapsed .lots{display:none}
 
@@ -906,6 +923,8 @@ function renderCost(){
     return String(r.name).toLowerCase().includes(q)
         || String(r.code).toLowerCase().includes(q)
         || String(r.brand).toLowerCase().includes(q)
+        || String(r.itemHash||'').toLowerCase().includes(q)
+        || String(r.barcode||'').toLowerCase().includes(q)
         || String(r.bl||'').toLowerCase().includes(q);
   });
 
@@ -974,29 +993,51 @@ function renderCost(){
       const avg = qsum ? wsum/qsum : (sc ? ssum/sc : 0);
       const spread = mx - mn;
 
+      // 코드/아이템/바코드 (첫 로트 기준, 매칭값 사용)
+      const ex = lots.find(l=>l.itemHash) || {};
+      const bx = lots.find(l=>l.barcode) || {};
+      const idsHtml = '<div class="pids">'
+        + '<span class="k"><span class="lb">코드</span>' + esc(p.code) + '</span>'
+        + (ex.itemHash ? '<span class="k"><span class="lb">ITEM#</span>' + esc(ex.itemHash) + '</span>' : '')
+        + (bx.barcode ? '<span class="k"><span class="lb">바코드</span>' + esc(bx.barcode) + '</span>' : '')
+        + '</div>';
+
+      if (lots.length === 1){
+        // 단일 로트: 한 줄로 압축
+        const l = lots[0];
+        return '<div class="cprod single-row">'
+          + '<div class="phd">'
+          +   '<span class="caret"></span>'
+          +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
+          +   (p.usd ? '<span class="pusd">$' + esc(p.usd) + '</span>' : '')
+          +   '<div class="single">'
+          +     '<span class="sk">₩' + fmtWon(costNum(l.krw)) + '<small>원</small></span>'
+          +     (l.fx ? '<span class="sf">환율 <b>' + esc(l.fx) + '</b></span>' : '')
+          +     (l.inDate ? '<span class="sd">' + esc(l.inDate) + ' 입고</span>' : '')
+          +   '</div>'
+          + '</div>'
+          + '</div>';
+      }
+
+      // 다중 로트: 헤더(범위+평균) + 펼침 카드
       const pcol = costCollapsed['P|'+p.code] ? ' collapsed' : '';
       const pcaret = costCollapsed['P|'+p.code] ? '▸' : '▾';
-
       const lotHtml = lots.map(l => {
         const k = costNum(l.krw);
-        const hi = (k===mx && spread>0) ? ' hi' : '';
-        return '<div class="lot'+hi+'">'
+        const cls = (spread>0 && k===mx) ? ' hi' : (spread>0 && k===mn) ? ' lo' : '';
+        return '<div class="lot'+cls+'">'
           + '<div class="ld"><span class="dot"></span>' + esc(l.inDate||'-') + '</div>'
           + '<div class="lkrw">₩' + fmtWon(k) + '<small>원</small></div>'
           + (l.fx ? '<div class="lfx">환율 <b>' + esc(l.fx) + '</b>' + (l.usd?' · $'+esc(l.usd):'') + '</div>' : (l.usd?'<div class="lfx">$'+esc(l.usd)+'</div>':''))
-          + (l.bl ? '<div class="lbl-bl">' + esc(l.bl) + '</div>' : '')
           + '</div>';
       }).join('');
 
-      return '<div class="cprod'+pcol+'" data-p="'+esc(p.code)+'">'
+      return '<div class="cprod multi'+pcol+'" data-p="'+esc(p.code)+'">'
         + '<div class="phd" data-pt="'+esc(p.code)+'">'
-        +   '<span class="caret" style="color:var(--sub);font-size:11px;width:11px">'+pcaret+'</span>'
-        +   '<span class="pnm">' + esc(p.name||p.code) + '</span>'
-        +   '<span class="pcode">' + esc(p.code) + '</span>'
+        +   '<span class="caret">'+pcaret+'</span>'
+        +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
         +   (p.usd ? '<span class="pusd">$' + esc(p.usd) + '</span>' : '')
-        +   (spread>0
-              ? '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + ' ~ ₩' + fmtWon(mx) + '</span>'
-              : '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + '</span>')
+        +   '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + ' ~ ₩' + fmtWon(mx) + '</span>'
         +   '<span class="pavg"><span class="lbl">가중평균</span>₩' + fmtWon(avg) + '</span>'
         + '</div>'
         + '<div class="lots">' + lotHtml + '</div>'
