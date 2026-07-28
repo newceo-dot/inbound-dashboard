@@ -188,6 +188,39 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .bl-group .it .q b{color:var(--ink)}
 .bl-group .it .note{font-size:11px;color:var(--eta)}
 
+/* 실시간 재고원가 */
+.cost-wrap{display:flex;flex-direction:column;gap:14px}
+.cbrand{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.cbrand > .bhd{display:flex;align-items:center;gap:10px;padding:11px 15px;background:#F6FAF7;border-bottom:1px solid var(--line);cursor:pointer}
+.cbrand > .bhd:hover{background:var(--green-bg)}
+.cbrand .bhd .caret{font-size:11px;color:var(--sub);width:11px}
+.cbrand .bhd .bnm{font-size:14px;font-weight:800}
+.cbrand .bhd .bcnt{font-size:10.5px;font-weight:800;background:var(--green);color:#fff;border-radius:99px;padding:1.5px 9px}
+.cbrand .bhd .bmeta{margin-left:auto;font-size:11.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.cbrand .bbody{padding:6px 10px 12px}
+.cprod{border:1px solid var(--line2);border-radius:12px;margin-top:8px;overflow:hidden}
+.cprod .phd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:9px 13px;background:#FBFCFB;border-bottom:1px solid var(--line2)}
+.cprod .phd .pnm{font-weight:800;font-size:13px;flex:1;min-width:180px;word-break:keep-all}
+.cprod .phd .pcode{font-family:'SF Mono',Consolas,monospace;font-size:11px;color:#2456C4;font-weight:600}
+.cprod .phd .pusd{font-size:11px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:99px;padding:1.5px 9px}
+.cprod .phd .prange{font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.cprod .phd .prange .lbl{color:var(--sub);font-weight:600;margin-right:3px}
+.cprod .phd .pavg{font-size:11.5px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;margin-left:auto}
+.cprod .phd .pavg .lbl{color:var(--sub);font-weight:600;margin-right:3px}
+/* 로트 행: 입고일별 재고단가 나란히 */
+.lots{display:flex;flex-wrap:wrap;gap:8px;padding:10px 13px}
+.lot{border:1px solid var(--line);border-radius:10px;padding:7px 11px;min-width:132px;background:#fff}
+.lot.hi{border-color:var(--green);background:var(--green-bg)}
+.lot .ld{font-size:10.5px;font-weight:800;color:var(--sub);display:flex;align-items:center;gap:5px}
+.lot .ld .dot{width:6px;height:6px;border-radius:99px;background:var(--ok)}
+.lot .lkrw{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+.lot .lkrw small{font-size:10px;font-weight:700;color:var(--sub);margin-left:1px}
+.lot .lfx{font-size:10.5px;color:var(--sub);font-variant-numeric:tabular-nums;margin-top:1px}
+.lot .lfx b{color:#2456C4;font-weight:700}
+.lot .lbl-bl{font-size:9.5px;color:var(--sub);font-family:'SF Mono',Consolas,monospace;margin-top:2px;word-break:break-all}
+.cbrand.collapsed .bbody{display:none}
+.cprod.collapsed .lots{display:none}
+
 .view{display:none}
 .view.on{display:block}
 
@@ -218,6 +251,7 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
   <a data-v="home" class="on"><span class="ico">▦</span>대시보드</a>
   <a data-v="sched"><span class="ico">▤</span>입고 스케줄</a>
   <a data-v="list"><span class="ico">☰</span>입고 내역</a>
+  <a data-v="cost"><span class="ico">₩</span>실시간 재고원가</a>
   <div class="foot">
     <div class="fx">
       <div class="fh"><b>환율</b><span id="fxUpd">-</span></div>
@@ -357,6 +391,39 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
       </div>
     </div>
 
+    <!-- ===== 실시간 재고원가 ===== -->
+    <div class="view" id="v-cost">
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi k1">
+          <div class="kh"><span class="icn">₩</span><span class="k">브랜드</span></div>
+          <div class="row"><span class="v" id="cBrandN">-<small>개</small></span></div>
+        </div>
+        <div class="kpi k2">
+          <div class="kh"><span class="icn">◫</span><span class="k">제품</span></div>
+          <div class="row"><span class="v" id="cProdN">-<small>종</small></span></div>
+        </div>
+        <div class="kpi k3">
+          <div class="kh"><span class="icn">▤</span><span class="k">입고 로트</span></div>
+          <div class="row"><span class="v" id="cLotN">-<small>건</small></span></div>
+        </div>
+        <div class="kpi k4">
+          <div class="kh"><span class="icn">◔</span><span class="k">적용환율 범위</span></div>
+          <div class="row"><span class="v" id="cFxRange" style="font-size:19px">-</span></div>
+          <div class="sub2">입고 시점별 환율 스프레드</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:12px">
+        <div class="ph">
+          <b>실시간 재고원가 <span style="font-weight:600;color:var(--sub);font-size:12px">· 입고일별 재고단가(원)를 로트 단위로 표시</span></b>
+          <span id="costHint" style="font-size:11.5px;color:var(--sub)">같은 제품이라도 입고 시점 환율로 원가가 확정됩니다</span>
+        </div>
+      </div>
+
+      <div class="cost-wrap" id="costWrap"></div>
+      <div class="empty" id="cempty" style="display:none"></div>
+    </div>
+
   </div>
 </div>
 
@@ -365,7 +432,8 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 const API_URL = 'https://script.google.com/macros/s/AKfycbwUsThyL5-TERebYgke0jQO50YkGr6gtBHG1DT2qI_GggbIP1Nq-z4Gtgrhp9M_VH01/exec';
 const FX_URL = 'https://open.er-api.com/v6/latest/USD';   // 무료 · 일 1회 갱신
 
-let ALL = [], SCHED = [];
+let ALL = [], SCHED = [], COST = [];
+let costCollapsed = {};
 let view = 'home';
 let ym = (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })();
 let brandSel = '전체', kindSel = '전체', query = '', daySel = null;
@@ -469,7 +537,8 @@ function setView(v){
   document.querySelectorAll('.view').forEach(el => el.classList.remove('on'));
   document.getElementById('v-' + v).classList.add('on');
   document.getElementById('ptitle').textContent =
-    v === 'home' ? '대시보드' : v === 'sched' ? '입고 스케줄' : '입고 내역';
+    v === 'home' ? '대시보드' : v === 'sched' ? '입고 스케줄'
+    : v === 'cost' ? '실시간 재고원가' : '입고 내역';
   render();
 }
 function render(){
@@ -477,6 +546,7 @@ function render(){
   if (view === 'home') renderHome();
   if (view === 'sched') renderSched();
   if (view === 'list') renderList();
+  if (view === 'cost') renderCost();
 }
 
 // ===== 대시보드 =====
@@ -821,6 +891,138 @@ function fillBrands(){
   }
 }
 
+// ===== 실시간 재고원가 =====
+function costNum(s){ const n = parseFloat(String(s||'').replace(/[^\d.]/g,'')); return isNaN(n)?0:n; }
+function fmtWon(n){ return Math.round(n).toLocaleString('ko-KR'); }
+function fmtFx(n){ return n.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function renderCost(){
+  const wrap = document.getElementById('costWrap');
+  const cempty = document.getElementById('cempty');
+
+  const rows = COST.filter(r => {
+    if (!query) return true;
+    const q = query.toLowerCase();
+    return String(r.name).toLowerCase().includes(q)
+        || String(r.code).toLowerCase().includes(q)
+        || String(r.brand).toLowerCase().includes(q)
+        || String(r.bl||'').toLowerCase().includes(q);
+  });
+
+  if (!rows.length){
+    wrap.innerHTML = '';
+    cempty.style.display = 'block';
+    cempty.className = 'empty';
+    cempty.textContent = COST.length ? '검색 결과가 없습니다.' : '재고원가 데이터가 없습니다.';
+    document.getElementById('cBrandN').innerHTML = '0<small>개</small>';
+    document.getElementById('cProdN').innerHTML = '0<small>종</small>';
+    document.getElementById('cLotN').innerHTML = '0<small>건</small>';
+    document.getElementById('cFxRange').textContent = '-';
+    return;
+  }
+  cempty.style.display = 'none';
+
+  // 브랜드 > 제품(코드) > 로트(입고일) 구조로 그룹핑
+  const brands = {};
+  let allFx = [];
+  for (const r of rows){
+    const b = r.brand || '기타';
+    if (!brands[b]) brands[b] = { name:b, prods:{}, lotN:0 };
+    const bg = brands[b];
+    const key = r.code;
+    if (!bg.prods[key]) bg.prods[key] = { code:r.code, name:r.name, usd:r.usd, lots:[] };
+    bg.prods[key].lots.push(r);
+    bg.lotN++;
+    const fxv = costNum(r.fx);
+    if (fxv) allFx.push(fxv);
+  }
+
+  // KPI
+  let prodN = 0, lotN = 0;
+  Object.values(brands).forEach(b => { prodN += Object.keys(b.prods).length; lotN += b.lotN; });
+  document.getElementById('cBrandN').innerHTML = Object.keys(brands).length + '<small>개</small>';
+  document.getElementById('cProdN').innerHTML = prodN + '<small>종</small>';
+  document.getElementById('cLotN').innerHTML = lotN + '<small>건</small>';
+  if (allFx.length){
+    const mn = Math.min(...allFx), mx = Math.max(...allFx);
+    document.getElementById('cFxRange').textContent = fmtFx(mn) + ' ~ ' + fmtFx(mx);
+  } else {
+    document.getElementById('cFxRange').textContent = '-';
+  }
+
+  // 브랜드 정렬 (제품 수 내림차순)
+  const brandArr = Object.values(brands).sort((a,b)=>Object.keys(b.prods).length - Object.keys(a.prods).length);
+
+  wrap.innerHTML = brandArr.map(bg => {
+    const prods = Object.values(bg.prods).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    const collapsed = costCollapsed['B|'+bg.name] ? ' collapsed' : '';
+    const caret = costCollapsed['B|'+bg.name] ? '▸' : '▾';
+
+    const prodHtml = prods.map(p => {
+      // 로트: 입고일 순 (파싱 실패 시 뒤로)
+      const lots = p.lots.slice().sort((a,b)=>{
+        const da = parseDate(a.inDate), db = parseDate(b.inDate);
+        if (da && db) return da - db;
+        if (da) return -1; if (db) return 1; return 0;
+      });
+      const krws = lots.map(l=>costNum(l.krw)).filter(v=>v>0);
+      const mn = krws.length ? Math.min(...krws) : 0;
+      const mx = krws.length ? Math.max(...krws) : 0;
+      // 가중평균 (수량 있으면 수량가중, 없으면 단순평균)
+      let wsum=0, qsum=0, ssum=0, sc=0;
+      lots.forEach(l=>{ const k=costNum(l.krw); if(!k)return; const q=costNum(l.qty); if(q){wsum+=k*q;qsum+=q;} ssum+=k;sc++; });
+      const avg = qsum ? wsum/qsum : (sc ? ssum/sc : 0);
+      const spread = mx - mn;
+
+      const pcol = costCollapsed['P|'+p.code] ? ' collapsed' : '';
+      const pcaret = costCollapsed['P|'+p.code] ? '▸' : '▾';
+
+      const lotHtml = lots.map(l => {
+        const k = costNum(l.krw);
+        const hi = (k===mx && spread>0) ? ' hi' : '';
+        return '<div class="lot'+hi+'">'
+          + '<div class="ld"><span class="dot"></span>' + esc(l.inDate||'-') + '</div>'
+          + '<div class="lkrw">₩' + fmtWon(k) + '<small>원</small></div>'
+          + (l.fx ? '<div class="lfx">환율 <b>' + esc(l.fx) + '</b>' + (l.usd?' · $'+esc(l.usd):'') + '</div>' : (l.usd?'<div class="lfx">$'+esc(l.usd)+'</div>':''))
+          + (l.bl ? '<div class="lbl-bl">' + esc(l.bl) + '</div>' : '')
+          + '</div>';
+      }).join('');
+
+      return '<div class="cprod'+pcol+'" data-p="'+esc(p.code)+'">'
+        + '<div class="phd" data-pt="'+esc(p.code)+'">'
+        +   '<span class="caret" style="color:var(--sub);font-size:11px;width:11px">'+pcaret+'</span>'
+        +   '<span class="pnm">' + esc(p.name||p.code) + '</span>'
+        +   '<span class="pcode">' + esc(p.code) + '</span>'
+        +   (p.usd ? '<span class="pusd">$' + esc(p.usd) + '</span>' : '')
+        +   (spread>0
+              ? '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + ' ~ ₩' + fmtWon(mx) + '</span>'
+              : '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + '</span>')
+        +   '<span class="pavg"><span class="lbl">가중평균</span>₩' + fmtWon(avg) + '</span>'
+        + '</div>'
+        + '<div class="lots">' + lotHtml + '</div>'
+        + '</div>';
+    }).join('');
+
+    return '<div class="cbrand'+collapsed+'" data-b="'+esc(bg.name)+'">'
+      + '<div class="bhd" data-bt="'+esc(bg.name)+'">'
+      +   '<span class="caret">'+caret+'</span>'
+      +   '<span class="bnm">' + esc(bg.name) + '</span>'
+      +   '<span class="bcnt">' + Object.keys(bg.prods).length + '종</span>'
+      +   '<span class="bmeta">로트 ' + bg.lotN + '건</span>'
+      + '</div>'
+      + '<div class="bbody">' + prodHtml + '</div>'
+      + '</div>';
+  }).join('');
+
+  // 접기/펼치기 이벤트
+  wrap.querySelectorAll('.bhd[data-bt]').forEach(el=>{
+    el.onclick = () => { const b=el.dataset.bt; costCollapsed['B|'+b]=!costCollapsed['B|'+b]; renderCost(); };
+  });
+  wrap.querySelectorAll('.phd[data-pt]').forEach(el=>{
+    el.onclick = () => { const p=el.dataset.pt; costCollapsed['P|'+p]=!costCollapsed['P|'+p]; renderCost(); };
+  });
+}
+
 // ===== 환율 (API 응답의 fx 사용) =====
 function renderFx(fx){
   const body = document.getElementById('fxBody');
@@ -861,6 +1063,7 @@ async function load(){
     const data = await jsonp(API_URL);
     ALL = (data.items || []).map(it => ({ ...it, _r: resolve(it) }));
     SCHED = (data.schedule || []).map(s => ({ ...s, _d: parseDate(s.date) }));
+    COST = (data.cost || []);
     renderFx(data.fx);
     const t = new Date(data.updated || Date.now());
     document.getElementById('upd').innerHTML = '<b>●</b> 데이터 갱신 '
