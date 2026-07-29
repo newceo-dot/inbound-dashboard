@@ -260,6 +260,82 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
   .hide-m{display:none}
   .tl-date{width:40px}
 }
+
+/* ===== 모바일 (폰, 600px 이하) ===== */
+@media(max-width:600px){
+  .content{padding:12px 12px 40px}
+
+  /* 상단바: 제목 한 줄, 컨트롤 아래로 접힘 */
+  .topbar{padding:9px 12px;gap:7px;position:sticky;top:0}
+  .pagetitle{font-size:15px;width:100%;margin-right:0}
+  .mnav{order:3}
+  .mnav .m-label{min-width:84px;font-size:12px}
+  .fb{height:34px;font-size:12.5px;padding:0 10px}
+  .fb.primary{order:4}
+  #selBrand,#selKind{order:5;flex:1;min-width:0}
+  #q{order:6;width:100%;min-width:0;flex-basis:100%;height:36px}
+
+  /* 네비: 가로 스크롤 탭 + 아이콘 축소 */
+  .nav{padding:6px 8px;gap:2px}
+  .nav .logo{padding:2px 6px}
+  .nav .logo .t{font-size:13px}
+  .nav a{padding:8px 11px;font-size:13px;border-radius:9px}
+  .nav a .ico{margin-right:5px}
+
+  /* KPI: 2열 유지하되 촘촘하게 */
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+  .kpi{padding:11px 12px;border-radius:13px}
+  .kpi .kh{gap:6px;margin-bottom:5px}
+  .kpi .icn{width:22px;height:22px;font-size:12px}
+  .kpi .k{font-size:11px}
+  .kpi .v{font-size:20px}
+  .kpi .v small{font-size:10px}
+  .kpi .sub2{font-size:10px}
+  #cFxRange{font-size:14px!important}
+
+  .panel{border-radius:12px}
+  .ph{padding:11px 13px}
+  .ph b{font-size:13px}
+
+  /* ===== 재고원가: 제품 헤더를 세로 스택으로 ===== */
+  .cost-wrap{gap:10px}
+  .cbrand > .bhd{padding:10px 12px;gap:8px}
+  .cbrand .bhd .bnm{font-size:13px}
+  .cbrand .bbody{padding:7px 8px 9px}
+
+  .cprod .phd{flex-wrap:wrap;gap:5px 8px;padding:9px 11px}
+  .cprod.multi .phd .caret{align-self:flex-start;margin-top:3px}
+  .cprod .phd .pmain{flex:1 1 100%;min-width:0}
+  .cprod .phd .pnm{font-size:13px}
+  .cprod .phd .pids{gap:3px 5px}
+  .cprod .phd .pids .k{font-size:10.5px;padding:2px 6px}
+  /* FOB·재고·값들을 아랫줄에 가로로 */
+  .cprod .phd .pusd,.cprod .phd .pstock{font-size:11.5px;padding:2px 8px}
+  .cprod .phd .single{flex:1 1 100%;justify-content:flex-start;gap:9px;margin-top:2px;flex-wrap:wrap}
+  .cprod .phd .single .sk{font-size:16px}
+  .cprod .phd .prange{flex:1 1 100%;margin-top:2px}
+  .cprod .phd .pavg{margin-top:0}
+
+  .lots{padding:8px 10px;gap:6px}
+  .lot{flex:1 1 calc(50% - 3px);min-width:0}
+  .lot .lkrw{font-size:15px}
+
+  /* 스케줄 타임라인 폰 대응 */
+  .tl-day{flex-direction:column;gap:4px}
+  .tl-date{width:auto;text-align:left;padding-top:0;display:flex;gap:6px;align-items:baseline}
+  .tl-date .dw{font-size:11px}
+  .tl-date .dn{font-size:15px}
+
+  /* 표 가로 스크롤 허용 */
+  .tbl-scroll{overflow-x:auto}
+}
+
+/* 아주 작은 폰 (380px 이하) */
+@media(max-width:380px){
+  .kpis{grid-template-columns:1fr 1fr;gap:7px}
+  .kpi .v{font-size:18px}
+  .lot{flex:1 1 100%}
+}
 </style>
 </head>
 <body>
