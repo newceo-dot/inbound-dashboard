@@ -212,6 +212,10 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .cprod .phd .pids .k .lb{color:#94A3B8;font-weight:700;font-family:'Pretendard',sans-serif;font-size:9.5px;letter-spacing:.02em}
 .cprod .phd .pusd{font-size:12px;font-weight:800;color:var(--ink);background:#FFF7E6;border:1px solid #FfE0A3;border-radius:8px;padding:3px 10px;flex:none}
 .cprod .phd .pusd .lb{font-size:9.5px;color:#B78A2E;font-weight:700;margin-right:3px}
+.cprod .phd .pstock{font-size:12px;font-weight:800;color:#0F5132;background:#E7F5EC;border:1px solid #BDE5C8;border-radius:8px;padding:3px 10px;flex:none;font-variant-numeric:tabular-nums}
+.cprod .phd .pstock .lb{font-size:9.5px;color:#3E8E5C;font-weight:700;margin-right:3px}
+.cprod .phd .pstock.zero{color:#9AA3AB;background:#F1F3F5;border-color:#E3E7EA}
+.cprod .phd .pstock.zero .lb{color:#AEB6BD}
 /* 단일 로트 제품: 헤더 오른쪽에 값 인라인 */
 .cprod .phd .single{display:flex;align-items:baseline;gap:11px;flex:none;font-variant-numeric:tabular-nums}
 .cprod .phd .single .sk{font-size:16px;font-weight:800}
@@ -1005,6 +1009,13 @@ function renderCost(){
         + (bx.barcode ? '<span class="k"><span class="lb">바코드</span>' + esc(bx.barcode) + '</span>' : '')
         + '</div>';
 
+      // 재고수량 (제품 단위, 첫 유효값)
+      const sx = lots.find(l=>l.stock!=='' && l.stock!=null) || {};
+      const stockN = costNum(sx.stock);
+      const stockHtml = (sx.stock!==undefined && sx.stock!=='' )
+        ? '<span class="pstock' + (stockN<=0?' zero':'') + '"><span class="lb">재고</span>' + fmtWon(stockN) + '개</span>'
+        : '';
+
       if (lots.length === 1){
         // 단일 로트: 한 줄로 압축
         const l = lots[0];
@@ -1013,6 +1024,7 @@ function renderCost(){
           +   '<span class="caret"></span>'
           +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
           +   (p.usd ? '<span class="pusd"><span class="lb">FOB</span>' + esc(usd(p.usd)) + '</span>' : '')
+          +   stockHtml
           +   '<div class="single">'
           +     '<span class="sk">₩' + fmtWon(costNum(l.krw)) + '<small>원</small></span>'
           +     (l.fx ? '<span class="sf">환율 <b>' + esc(l.fx) + '</b></span>' : '')
@@ -1040,6 +1052,7 @@ function renderCost(){
         +   '<span class="caret">'+pcaret+'</span>'
         +   '<div class="pmain"><span class="pnm">' + esc(p.name||p.code) + '</span>' + idsHtml + '</div>'
         +   (p.usd ? '<span class="pusd"><span class="lb">FOB</span>' + esc(usd(p.usd)) + '</span>' : '')
+        +   stockHtml
         +   '<span class="prange"><span class="lbl">재고단가</span>₩' + fmtWon(mn) + ' ~ ₩' + fmtWon(mx) + '</span>'
         +   '<span class="pavg"><span class="lbl">가중평균</span>₩' + fmtWon(avg) + '</span>'
         + '</div>'
