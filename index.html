@@ -32,22 +32,30 @@ button,input,select{font:inherit}
 .nav a .ico{width:18px;text-align:center;font-size:13px}
 .nav .foot{margin-top:auto;padding:12px}
 
-/* 환율 위젯 */
-.fx{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:10px}
-.fx .fh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.fx .fh b{font-size:11.5px;font-weight:800}
-.fx .fh span{font-size:9.5px;color:var(--sub)}
-.fx .r{padding:7px 0;border-bottom:1px solid var(--line)}
-.fx .r:last-child{border-bottom:0;padding-bottom:0}
-.fx .r .top{display:flex;justify-content:space-between;align-items:baseline}
-.fx .r .c{font-size:11.5px;font-weight:800;color:var(--ink)}
-.fx .r .v{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-0.02em}
-.fx .r .bot{display:flex;justify-content:flex-end;align-items:center;gap:5px;margin-top:3px}
-.fx .r .chg{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums}
-.fx .r .chg.up{color:#C0392B} .fx .r .chg.down{color:#2456C4} .fx .r .chg.flat{color:var(--sub)}
-.fx .r .pct{font-size:10px;font-weight:800;border-radius:5px;padding:1.5px 6px;font-variant-numeric:tabular-nums}
-.fx .r .pct.up{background:#FBEAEA;color:#C0392B} .fx .r .pct.down{background:#EAF0FB;color:#2456C4} .fx .r .pct.flat{background:var(--line);color:var(--sub)}
-.fx .err{font-size:11px;color:var(--sub);text-align:center;padding:4px 0}
+/* 환율 위젯 (포털 고시환율 스타일) */
+.fxCard{background:var(--bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.fxHd{font-size:11px;font-weight:800;color:var(--sub);background:var(--green-bg);padding:7px 12px;border-bottom:1px solid var(--line)}
+.fxMainRow{padding:10px 10px 9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.fxMainTx{flex:1;min-width:0}
+.fxFlagC{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);flex:none;overflow:hidden;display:block;background:#fff}
+.fxFlagC svg{width:100%;height:100%;display:block}
+.fxFlagC.sm{width:30px;height:30px}
+.fxMainNm{display:block;font-size:11.5px;font-weight:600;color:var(--sub);margin-bottom:1px}
+.fxMainVal{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 6px;font-size:19px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#C0392B}
+.fxMainVal i{font-style:normal;font-size:.56em;font-weight:700}
+.fxMainVal em{margin-left:auto;font-style:normal;font-size:.5em;font-weight:800}
+.fxRows{display:flex;flex-direction:column}
+.fxLine{display:flex;align-items:center;gap:5px;padding:7px 10px;font-size:11px}
+.fxLine+.fxLine{border-top:1px solid var(--line)}
+.fxLine .nm{color:var(--ink);font-weight:700;white-space:nowrap;display:flex;align-items:baseline;gap:2px}
+.fxLine .nm i{font-style:normal;font-size:.85em;color:var(--sub);font-weight:600}
+.fxLine .vl{margin-left:auto;display:flex;align-items:baseline;gap:5px;font-weight:800;font-variant-numeric:tabular-nums;color:#C0392B;white-space:nowrap}
+.fxLine .vl em{font-style:normal;font-size:.82em;font-weight:800}
+.fxLine.dim{color:var(--sub);justify-content:center;padding:16px 12px}
+.fxMainVal em.up,.fxLine em.up{color:#C0392B}
+.fxMainVal em.dn,.fxLine em.dn{color:#2456C4}
+.fxMainVal em.flat,.fxLine em.flat{color:var(--sub)}
+.fxSrc{font-size:9.5px;color:var(--sub);padding:8px 12px 2px;text-align:right}
 .nav .lg{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--sub);padding:0 4px 8px}
 .nav .lg i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:6px}
 .nav .lg .io{background:var(--ok)} .nav .lg .ie{background:var(--eta)} .nav .lg .im{background:var(--mon)}
@@ -184,6 +192,8 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
 .bl-group .it + .it{border-top:1px dashed var(--line2)}
 .bl-group .it .nm{font-weight:700;flex:1;min-width:180px;word-break:keep-all}
 .bl-group .it .code{display:block;font-weight:600;font-size:11px;color:#2456C4;font-family:'SF Mono',Consolas,monospace;letter-spacing:-0.01em;margin-top:1px}
+.bl-group .it .code .qty{color:var(--sub);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:600;letter-spacing:0}
+.bl-group .it .code .qty b{color:var(--ink);font-weight:800}
 .bl-group .it .q{font-size:11.5px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
 .bl-group .it .q b{color:var(--ink)}
 .bl-group .it .note{font-size:11px;color:var(--eta)}
@@ -355,10 +365,7 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
   <a data-v="list"><span class="ico">☰</span>입고 내역</a>
   <a data-v="cost"><span class="ico">₩</span>실시간 재고원가</a>
   <div class="foot">
-    <div class="fx">
-      <div class="fh"><b>환율</b><span id="fxUpd">-</span></div>
-      <div id="fxBody"><div class="err">불러오는 중…</div></div>
-    </div>
+    <div id="fxBody"><div class="fxCard"><div class="fxHd">환전 고시 환율</div><div class="fxLine dim">불러오는 중…</div></div></div>
     <div class="lg">
       <span><i class="io"></i>확정 (입고일)</span>
       <span><i class="ie"></i>예정 (ETA)</span>
@@ -856,8 +863,11 @@ function renderSched(){
         + '</div><div class="items">'
         + g.items.map(s =>
             '<div class="it">'
-            + '<span class="nm">'+esc(s.name)+'<span class="code">'+esc(s.code)+'</span></span>'
-            + (qtyNum(s.qty)?'<span class="q">수량 <b>'+qtyNum(s.qty).toLocaleString()+'</b></span>':'')
+            + '<span class="nm">'+esc(s.name)
+              + '<span class="code">'+esc(s.code)
+                + (qtyNum(s.qty)?'<span class="qty"> · 수량 <b>'+qtyNum(s.qty).toLocaleString()+'</b></span>':'')
+              + '</span>'
+              + '</span>'
             + (s.note?'<span class="note">'+esc(s.note)+'</span>':'')
             + '</div>'
           ).join('')
@@ -1160,38 +1170,70 @@ function renderCost(){
   });
 }
 
-// ===== 환율 (API 응답의 fx 사용) =====
+// ===== 환율 (포털 고시환율 스타일) =====
+const FLAG_SVG = {
+  usd:'<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><g fill="#B22234"><rect y="0" width="24" height="1.85"/><rect y="3.7" width="24" height="1.85"/><rect y="7.4" width="24" height="1.85"/><rect y="11.1" width="24" height="1.85"/><rect y="14.8" width="24" height="1.85"/><rect y="18.5" width="24" height="1.85"/><rect y="22.2" width="24" height="1.8"/></g><rect width="11" height="9.25" fill="#3C3B6E"/><g fill="#fff"><circle cx="2" cy="2" r=".7"/><circle cx="5.5" cy="2" r=".7"/><circle cx="9" cy="2" r=".7"/><circle cx="3.7" cy="4.2" r=".7"/><circle cx="7.2" cy="4.2" r=".7"/><circle cx="2" cy="6.4" r=".7"/><circle cx="5.5" cy="6.4" r=".7"/><circle cx="9" cy="6.4" r=".7"/></g></svg>',
+  jpy:'<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="6.4" fill="#BC002D"/></svg>',
+  eur:'<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#003399"/><g fill="#FFCC00"><circle cx="12" cy="5.2" r="1.05"/><circle cx="12" cy="18.8" r="1.05"/><circle cx="5.2" cy="12" r="1.05"/><circle cx="18.8" cy="12" r="1.05"/><circle cx="7.2" cy="7.2" r="1.05"/><circle cx="16.8" cy="7.2" r="1.05"/><circle cx="7.2" cy="16.8" r="1.05"/><circle cx="16.8" cy="16.8" r="1.05"/></g></svg>',
+  cny:'<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#DE2910"/><g fill="#FFDE00"><path d="M6 4.2l1.05 3.24-2.76-2h3.42l-2.76 2z"/><circle cx="11.6" cy="3.4" r=".95"/><circle cx="13.6" cy="5.6" r=".95"/><circle cx="13.6" cy="8.6" r=".95"/><circle cx="11.6" cy="10.7" r=".95"/></g></svg>',
+};
+function flagOf(k){ return FLAG_SVG[k] || ''; }
+function fxNum(v){ return v==null ? '—' : Number(v).toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fxArrow(dir){ return dir>0?'▲':(dir<0?'▼':'—'); }
+function fxCls(dir){ return dir>0?'up':(dir<0?'dn':'flat'); }
+
 function renderFx(fx){
   const body = document.getElementById('fxBody');
   if (!fx || !fx.cur){
-    body.innerHTML = '<div class="err">환율 정보 없음</div>';
+    body.innerHTML = '<div class="fxCard"><div class="fxHd">환전 고시 환율</div><div class="fxLine dim">환율 정보 없음</div></div>';
     return;
   }
-  const f1 = n => n.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const rows = [
-    { c: '미국 USD', v: fx.cur.usd, p: fx.prev ? fx.prev.usd : null },
-    { c: '일본 JPY 100', v: fx.cur.jpy100, p: fx.prev ? fx.prev.jpy100 : null },
-    { c: '중국 CNY', v: fx.cur.cny, p: fx.prev ? fx.prev.cny : null },
-  ];
-  body.innerHTML = rows.map(x => {
-    let chgHtml = '';
-    if (x.p != null){
-      const diff = x.v - x.p;
-      const pct = diff / x.p * 100;
-      const dir = Math.abs(diff) < 0.05 ? 'flat' : (diff > 0 ? 'up' : 'down');
-      const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '-';
-      chgHtml = '<div class="bot">'
-        + '<span class="chg ' + dir + '">' + arrow + ' ' + f1(Math.abs(diff)) + '</span>'
-        + '<span class="pct ' + dir + '">' + (diff>0?'+':diff<0?'-':'') + Math.abs(pct).toFixed(2) + '%</span>'
-        + '</div>';
-    }
-    return '<div class="r"><div class="top"><span class="c">' + x.c + '</span>'
-      + '<span class="v">₩' + f1(x.v) + '</span></div>' + chgHtml + '</div>';
-  }).join('');
+  // 표시 순서: 미국 USD → 일본 JPY(100엔) → 유럽 EUR → 중국 CNY
+  const ORDER = [
+    { k:'usd', name:'미국',     cur:'USD', unit:'',      val:fx.cur.usd,    prev:fx.prev?fx.prev.usd:null },
+    { k:'jpy', name:'일본',     cur:'JPY', unit:'100엔', val:fx.cur.jpy100, prev:fx.prev?fx.prev.jpy100:null },
+    { k:'eur', name:'유럽연합', cur:'EUR', unit:'',      val:fx.cur.eur,    prev:fx.prev?fx.prev.eur:null },
+    { k:'cny', name:'중국',     cur:'CNY', unit:'',      val:fx.cur.cny,    prev:fx.prev?fx.prev.cny:null },
+  ].filter(x => x.val != null);
+
+  if (!ORDER.length){
+    body.innerHTML = '<div class="fxCard"><div class="fxHd">환전 고시 환율</div><div class="fxLine dim">환율 정보 없음</div></div>';
+    return;
+  }
+
+  const calc = x => {
+    if (x.prev == null) return { dir:0, change:0 };
+    const diff = x.val - x.prev;
+    const dir = Math.abs(diff) < 0.005 ? 0 : (diff > 0 ? 1 : -1);
+    return { dir, change: Math.abs(diff) };
+  };
+
+  const m = ORDER[0];       // 대표(미국)
+  const mc = calc(m);
+  const rest = ORDER.slice(1);
+
+  let html = '<div class="fxCard">'
+    + '<div class="fxHd">환전 고시 환율</div>'
+    + '<div class="fxMainRow">'
+    +   '<span class="fxFlagC">' + flagOf(m.k) + '</span>'
+    +   '<div class="fxMainTx"><span class="fxMainNm">' + m.name + m.cur + '</span>'
+    +   '<span class="fxMainVal">₩' + fxNum(m.val)
+    +   '<em class="' + fxCls(mc.dir) + '">' + fxArrow(mc.dir) + fxNum(mc.change) + '</em></span></div>'
+    + '</div>'
+    + '<div class="fxRows">' + rest.map(f => {
+        const c = calc(f);
+        return '<div class="fxLine"><span class="fxFlagC sm">' + flagOf(f.k) + '</span>'
+          + '<span class="nm">' + f.cur + (f.unit ? '<i>' + f.unit + '</i>' : '') + '</span>'
+          + '<span class="vl">₩' + fxNum(f.val)
+          + '<em class="' + fxCls(c.dir) + '">' + fxArrow(c.dir) + fxNum(c.change) + '</em></span></div>';
+      }).join('') + '</div>';
+
   if (fx.date){
     const d = new Date(fx.date);
-    document.getElementById('fxUpd').textContent = (d.getMonth()+1) + '/' + d.getDate() + ' 기준';
+    html += '<div class="fxSrc">' + (d.getFullYear()) + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' 기준</div>';
   }
+  html += '</div>';
+  body.innerHTML = html;
 }
 
 // ===== 로드 =====
