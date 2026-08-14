@@ -525,6 +525,7 @@ tr.grp .bset{font-weight:600;color:var(--sub);font-size:11px}
       <div class="panel" style="margin-bottom:12px">
         <div class="ph">
           <b>실시간 재고원가 <span style="font-weight:600;color:var(--sub);font-size:12px">· 입고일별 재고단가(원)를 로트 단위로 표시</span></b>
+          <input id="qCost" type="search" placeholder="품명 · 더존코드 · 아이템번호 · 바코드 · B/L 검색" style="height:32px;border:1px solid var(--line);border-radius:10px;padding:0 12px;min-width:240px;background:#fff;font-size:12.5px;margin-left:auto">
           <span id="costHint" style="font-size:11.5px;color:var(--sub)">같은 제품이라도 입고 시점 환율로 원가가 확정됩니다</span>
         </div>
       </div>
@@ -649,6 +650,8 @@ function setView(v){
   document.getElementById('ptitle').textContent =
     v === 'home' ? '대시보드' : v === 'sched' ? '입고 스케줄'
     : v === 'cost' ? '실시간 재고원가' : '입고 내역';
+  document.getElementById('q').value = query;
+  const qc = document.getElementById('qCost'); if (qc) qc.value = query;
   render();
 }
 function render(){
@@ -1278,7 +1281,16 @@ document.getElementById('next').onclick = () => { ym.m++; if(ym.m>11){ym.m=0;ym.
 document.getElementById('btnNow').onclick = () => { const n=new Date(); ym={y:n.getFullYear(),m:n.getMonth()}; daySel=null; render(); };
 document.getElementById('selBrand').onchange = e => { brandSel = e.target.value; daySel=null; render(); };
 document.getElementById('selKind').onchange = e => { kindSel = e.target.value; daySel=null; render(); };
-document.getElementById('q').addEventListener('input', e => { query = e.target.value.trim(); render(); });
+document.getElementById('q').addEventListener('input', e => {
+  query = e.target.value.trim();
+  const qc = document.getElementById('qCost'); if (qc) qc.value = query;
+  render();
+});
+document.getElementById('qCost').addEventListener('input', e => {
+  query = e.target.value.trim();
+  document.getElementById('q').value = query;
+  render();
+});
 document.getElementById('btnClr').onclick = () => { daySel = null; render(); };
 document.querySelectorAll('thead th.sortable').forEach(th => {
   th.onclick = () => {
